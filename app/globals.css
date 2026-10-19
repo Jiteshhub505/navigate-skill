@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+:root {
+    color-scheme: light;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 50% 96%;
+    --secondary-foreground: 240 10% 10%;
+    --muted: 270 30% 96%;
+    --muted-foreground: 240 5% 40%;
+    --accent: 263.4 70% 50.4%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 90%;
+    --input: 240 5% 90%;
+    --ring: 263.4 70% 50.4%;
+}
+
+html,
+body {
+    /* Lightweight solid/simple bg instead of heavy gradient compositor layer */
+    background-color: #faf7ff;
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+    font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    /* Promote to GPU layer to avoid repaints */
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────── */
+/* Respects OS-level "Reduce Motion" setting — critical for low-end devices  */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* Kill marquee on low-motion */
+    .animate-marquee {
+        animation: none !important;
+    }
+
+    /* Disable framer-motion animations via CSS */
+    [data-framer-motion] {
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}
+
+/* ─── Custom Utilities ───────────────────────────────────────────────────── */
+@layer utilities {
+    .text-glow {
+        text-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
+    }
+
+    .text-gradient {
+        background: linear-gradient(135deg, #a855f7 0%, #d946ef 50%, #a855f7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%);
+    }
+
+    .bg-mesh {
+        background-image:
+            radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.3) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.25) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.2) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, rgba(217, 70, 239, 0.25) 0px, transparent 50%);
+    }
+
+    /* Glass effect — conditional: falls back to solid on unsupported browsers */
+    .glass {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(168, 85, 247, 0.15);
+    }
+    @supports (backdrop-filter: blur(1px)) {
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    }
+
+    .glass-purple {
+        background: rgba(168, 85, 247, 0.15);
+        border: 1px solid rgba(168, 85, 247, 0.2);
+    }
+    @supports (backdrop-filter: blur(1px)) {
+        .glass-purple {
+            background: rgba(168, 85, 247, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    }
+
+    .glass-strong {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(168, 85, 247, 0.25);
+    }
+    @supports (backdrop-filter: blur(1px)) {
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    }
+
+    .glow-md {
+        box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+    }
+
+    .glow-lg {
+        box-shadow: 0 0 40px rgba(168, 85, 247, 0.4);
+    }
+
+    /* Use content-visibility for sections below the fold */
+    .cv-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 500px;
+    }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
+}
+
+/* ─── Marquee ────────────────────────────────────────────────────────────── */
+.animate-marquee {
+    animation: marquee 30s linear infinite;
+    /* Use translate3d for GPU compositing */
+    will-change: transform;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+/* Pause marquee when tab is hidden to save CPU */
+@media (prefers-reduced-motion: no-preference) {
+    .animate-marquee:hover {
+        animation-play-state: paused;
+    }
+}
+
+/* ─── Image optimization ─────────────────────────────────────────────────── */
+img {
+    /* Prevent layout shift */
+    height: auto;
+}
+
+/* ─── Entry Animations (replaces Framer Motion on low-impact elements) ───── */
+/* GPU-composited, runs off main thread, respects prefers-reduced-motion      */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 24px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @keyframes fadeInUp {
+        from { opacity: 1; transform: none; }
+        to   { opacity: 1; transform: none; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 1; }
+        to   { opacity: 1; }
+    }
+}
+
+
